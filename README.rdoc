@@ -8,9 +8,21 @@ RDocView is a real-time viewer of RDoc which used WebSocket.
 
 = Usage
 
-  rdoc-view [-p port] -[-h host] filename
+  rdoc-view [-p port] [-o addr] filename
+    
+    -p port        set the port (default is 4567)
+    -o addr        set the host (default is 0.0.0.0)
 
-=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-ssssss
+browse http://localhost:3456/
+and edit filename by your favorite editor.
+Change of a file is detected and a rendering is carried out in real time. 
+
+= Support Browser
+- Google Chrome
+- Firefox
+
+= License
+
+MIT License
+
 
