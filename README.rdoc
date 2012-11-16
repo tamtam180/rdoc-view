@@ -1,0 +1,16 @@
+= RDocView
+
+RDocView is a real-time viewer of RDoc which used WebSocket.
+
+= Install
+
+   gem install rdoc-view
+
+= Usage
+
+  rdoc-view [-p port] -[-h host] filename
+
+=
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ssssss
+
