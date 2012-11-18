@@ -1,6 +1,6 @@
 = RDocView
 
-RDocView is a real-time viewer of RDoc which used WebSocket.
+RDocView is a real-time viewer of RDoc/Markdown which used WebSocket.
 
 = Install
 
@@ -8,12 +8,14 @@ RDocView is a real-time viewer of RDoc which used WebSocket.
 
 = Usage
 
-  rdoc-view [-p port] [-o addr] filename
+  rdoc-view [-p port] [-o addr] [-t type] filename
     
     -p port        set the port (default is 4567)
     -o addr        set the host (default is 0.0.0.0)
+    -t type        set the document type (rdoc or md)
+                   if omits, judging from the extension
 
-browse http://localhost:3456/
+browse http://localhost:4567/
 and edit filename by your favorite editor.
 Change of a file is detected and a rendering is carried out in real time. 
 
@@ -23,6 +25,5 @@ Change of a file is detected and a rendering is carried out in real time.
 
 = License
 
-MIT License
-
+- MIT License
 

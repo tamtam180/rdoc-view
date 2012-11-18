@@ -3,19 +3,47 @@
 $LOAD_PATH.unshift File.dirname(__FILE__)
 require "rdoc-view/version"
 
+require "net/https"
+require "uri"
+require "optparse"
+require "rdoc"
+require "rdoc/markup/to_html"
+
 require "sinatra/base"
 require "sinatra-websocket"
 require "fssm"
-require "rdoc"
-require "rdoc/markup/to_html"
-require "optparse"
 
 module RDocView
+  def convert(file, type)
+    html = ""
+    text = open(file){|f|f.read}
+    case type
+    when "md"
+      uri = URI.parse("https://api.github.com/markdown/raw")
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      https.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      #https.set_debug_output $stderr
+      https.start do | access |
+        resp = access.post(uri.path, text, {"content-type" => "text/plain"})
+        html = resp.body
+      end
+    else
+      h = RDoc::Markup::ToHtml.new
+      html = h.convert(text)
+    end
+    return html
+  end
+  module_function :convert
+
   class ViewApp < Sinatra::Base
-    
-    OptionParser.new { |op|
-      op.on('-p port',   'set the port (default is 4567)')                { |val| set :port, Integer(val) }
-      op.on('-o addr',   'set the host (default is 0.0.0.0)')             { |val| set :bind, val }
+   
+    opt_type = nil
+    OptionParser.new { |op |
+      op.on('-p port',   'set the port (default is 4567)')           { |val| set :port, Integer(val) }
+      op.on('-o addr',   'set the host (default is 0.0.0.0)')        { |val| set :bind, val }
+      op.on('-t type',   'set the document type (rdoc or md)',
+                         'if omits, judging from the extension')     { |val| opt_type = val.downcase }
     }.parse!(ARGV)
     set :environment, :production
 
@@ -26,12 +54,16 @@ module RDocView
     set :server, "thin"
     set :sockets, []
 
+    support_extensions = ["rdoc", "md"]
+    set :type, opt_type
+    set :type, File.extname(ARGV[0]).downcase().slice(1..-1) unless support_extensions.include?(opt_type)
+
     send_func = Proc.new do | ws |
       if File.exists?(settings.target_file) then
-        text = open(settings.target_file){|f|f.read}
-        h = RDoc::Markup::ToHtml.new
-        html = h.convert(text)
-        
+        # convert to html
+        html = RDocView.convert(settings.target_file, settings.type)
+        html.force_encoding("utf-8")
+
         EM.next_tick do
           if ws then
             ws.send(html)
