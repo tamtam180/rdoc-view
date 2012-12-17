@@ -12,6 +12,7 @@ require "rdoc/markup/to_html"
 require "sinatra/base"
 require "sinatra-websocket"
 require "fssm"
+require "RedCloth"
 
 module RDocView
   def convert(file, type)
@@ -28,6 +29,8 @@ module RDocView
         resp = access.post(uri.path, text, {"content-type" => "text/plain"})
         html = resp.body
       end
+    when "textile"
+      html = RedCloth.new(text).to_html
     else
       h = RDoc::Markup::ToHtml.new
       html = h.convert(text)
@@ -42,7 +45,7 @@ module RDocView
     OptionParser.new { |op |
       op.on('-p port',   'set the port (default is 4567)')           { |val| set :port, Integer(val) }
       op.on('-o addr',   'set the host (default is 0.0.0.0)')        { |val| set :bind, val }
-      op.on('-t type',   'set the document type (rdoc or md)',
+      op.on('-t type',   'set the document type (rdoc or md or textile)',
                          'if omits, judging from the extension')     { |val| opt_type = val.downcase }
     }.parse!(ARGV)
     set :environment, :production

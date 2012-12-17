@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "sinatra-websocket"
   gem.add_dependency "fssm"
   gem.add_dependency "rdoc"
+  gem.add_dependency "RedCloth"
 end
