@@ -57,7 +57,7 @@ module RDocView
     set :server, "thin"
     set :sockets, []
 
-    support_extensions = ["rdoc", "md"]
+    support_extensions = ["rdoc", "md", "textile"]
     set :type, opt_type
     set :type, File.extname(ARGV[0]).downcase().slice(1..-1) unless support_extensions.include?(opt_type)
 
