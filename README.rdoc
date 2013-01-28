@@ -8,16 +8,28 @@ RDocView is a real-time viewer of RDoc/Markdown/Textile which used WebSocket.
 
 = Usage
 
-  rdoc-view [-p port] [-o addr] [-t type] filename
+  rdoc-view [-p port] [-o addr] [-t type] [--html] filename
     
     -p port        set the port (default is 4567)
     -o addr        set the host (default is 0.0.0.0)
     -t type        set the document type (rdoc or md or textile)
                    if omits, judging from the extension
+    -h, --html     convert to html.
 
 browse http://localhost:4567/
 and edit filename by your favorite editor.
 Change of a file is detected and a rendering is carried out in real time. 
+
+== Example.1 (Realtime Viewer)
+
+  $ rdoc-view README.md
+  $ google-chrome http://localhost:4567/ &
+  $ vim README.md
+  ....
+
+== Example.2 (Convert to HTML)
+
+  $ rdoc-view --html README.md > README.html
 
 = Blog post
 Japanese: http://mt.orz.at/archives/2012/11/realtimeviewerr.html

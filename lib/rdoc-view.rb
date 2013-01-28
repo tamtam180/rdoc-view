@@ -40,19 +40,21 @@ module RDocView
   module_function :convert
 
   class ViewApp < Sinatra::Base
-   
+  
+    opt_html = false
     opt_type = nil
     OptionParser.new { |op |
       op.on('-p port',   'set the port (default is 4567)')           { |val| set :port, Integer(val) }
       op.on('-o addr',   'set the host (default is 0.0.0.0)')        { |val| set :bind, val }
       op.on('-t type',   'set the document type (rdoc or md or textile)',
                          'if omits, judging from the extension')     { |val| opt_type = val.downcase }
+      op.on('-h', '--html', 'convert to html.')                      { |val| opt_html = true }
     }.parse!(ARGV)
     set :environment, :production
 
     raise "ARGV is empty." if ARGV.empty?
     raise "File Not Found:#{ARGV[0]}" unless File.exists?(ARGV[0])
-    
+   
     set :target_file, File.expand_path(ARGV[0])
     set :server, "thin"
     set :sockets, []
@@ -60,6 +62,16 @@ module RDocView
     support_extensions = ["rdoc", "md", "textile"]
     set :type, opt_type
     set :type, File.extname(ARGV[0]).downcase().slice(1..-1) unless support_extensions.include?(opt_type)
+
+    # HTMLに変換して終了する
+    if opt_html then
+      html = RDocView.convert(settings.target_file, settings.type)
+      html.force_encoding("utf-8")
+      tmpl_file = File.expand_path(File.dirname(__FILE__) + "/views/index-html.erb")
+      tmpl = ERB.new(open(tmpl_file){|f|f.read})
+      puts tmpl.result(binding)
+      exit 
+    end
 
     send_func = Proc.new do | ws |
       if File.exists?(settings.target_file) then
