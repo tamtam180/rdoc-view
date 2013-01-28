@@ -11,7 +11,7 @@ require "rdoc/markup/to_html"
 
 require "sinatra/base"
 require "sinatra-websocket"
-require "fssm"
+require "listen"
 require "RedCloth"
 
 module RDocView
@@ -53,7 +53,7 @@ module RDocView
     raise "ARGV is empty." if ARGV.empty?
     raise "File Not Found:#{ARGV[0]}" unless File.exists?(ARGV[0])
     
-    set :target_file, ARGV[0]
+    set :target_file, File.expand_path(ARGV[0])
     set :server, "thin"
     set :sockets, []
 
@@ -79,14 +79,13 @@ module RDocView
       end
     end
 
-    # blockingしちゃうので。
-    th = Thread.new(send_func) do | send_func |
-      FSSM.monitor(File.dirname(settings.target_file), File.basename(settings.target_file)) do
-        update {|b,r| send_func.call()}
-        delete {|b,r| }
-        create {|b,r| send_func.call()}
+    # ファイル監視
+    listener = Listen::Listener.new(File.dirname(settings.target_file)) do |modified, added, removed|
+    if modified.include?(settings.target_file) || added.include?(settings.target_file) then
+        send_func.call()
       end
     end
+    listener.start(false)
 
     # 簡易的なTimer。定期的にPingを飛ばす。
     th_timer = Thread.new() do

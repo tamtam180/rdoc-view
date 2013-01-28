@@ -19,7 +19,8 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "sinatra"
   gem.add_dependency "sinatra-websocket"
-  gem.add_dependency "fssm"
+  gem.add_dependency "listen"
+  gem.add_dependency "rb-inotify", "~> 0.8.8"
   gem.add_dependency "rdoc"
   gem.add_dependency "RedCloth"
 end
