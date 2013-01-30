@@ -12,7 +12,7 @@ RDocView is a real-time viewer of RDoc/Markdown/Textile which used WebSocket.
     
     -p port        set the port (default is 4567)
     -o addr        set the host (default is 0.0.0.0)
-    -t type        set the document type (rdoc or md or textile)
+    -t type        set the document type (rdoc,textile,md or markdown)
                    if omits, judging from the extension
     -h, --html     convert to html.
 

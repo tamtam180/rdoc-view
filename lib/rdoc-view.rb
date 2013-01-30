@@ -19,7 +19,7 @@ module RDocView
     html = ""
     text = open(file){|f|f.read}
     case type
-    when "md"
+    when "md", "markdown"
       uri = URI.parse("https://api.github.com/markdown/raw")
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true
@@ -46,7 +46,7 @@ module RDocView
     OptionParser.new { |op |
       op.on('-p port',   'set the port (default is 4567)')           { |val| set :port, Integer(val) }
       op.on('-o addr',   'set the host (default is 0.0.0.0)')        { |val| set :bind, val }
-      op.on('-t type',   'set the document type (rdoc or md or textile)',
+      op.on('-t type',   'set the document type (rdoc,textile,md or markdown)',
                          'if omits, judging from the extension')     { |val| opt_type = val.downcase }
       op.on('-h', '--html', 'convert to html.')                      { |val| opt_html = true }
     }.parse!(ARGV)
@@ -59,7 +59,7 @@ module RDocView
     set :server, "thin"
     set :sockets, []
 
-    support_extensions = ["rdoc", "md", "textile"]
+    support_extensions = ["rdoc", "md", "markdown", "textile"]
     set :type, opt_type
     set :type, File.extname(ARGV[0]).downcase().slice(1..-1) unless support_extensions.include?(opt_type)
 
