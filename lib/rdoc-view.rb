@@ -44,6 +44,7 @@ module RDocView
     opt_html = false
     opt_type = nil
     OptionParser.new { |op |
+      op.version = VERSION
       op.on('-p port',   'set the port (default is 4567)')           { |val| set :port, Integer(val) }
       op.on('-o addr',   'set the host (default is 0.0.0.0)')        { |val| set :bind, val }
       op.on('-t type',   'set the document type (rdoc,textile,md or markdown)',
