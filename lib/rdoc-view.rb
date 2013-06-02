@@ -93,12 +93,14 @@ module RDocView
     end
 
     # ファイル監視
-    listener = Listen::Listener.new(File.dirname(settings.target_file)) do |modified, added, removed|
-    if modified.include?(settings.target_file) || added.include?(settings.target_file) then
+    callback = Proc.new do |modified, added, removed|
+      if modified.include?(settings.target_file) || added.include?(settings.target_file) then
         send_func.call()
       end
     end
-    listener.start(false)
+    listener = Listen.to(File.dirname(settings.target_file), :relative_paths => false)
+      .change(&callback)
+      .start
 
     # 簡易的なTimer。定期的にPingを飛ばす。
     th_timer = Thread.new() do
